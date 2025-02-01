@@ -115,7 +115,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Add your frontend URL here
+    allow_origins=["http://localhost:3000","https://soccer-predictor-ml-bekizod.netlify.app/"],  # Add your frontend URL here
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
