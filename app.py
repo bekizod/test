@@ -9,6 +9,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 # Global preprocessor and model definition
 preprocessor = None
@@ -110,6 +111,15 @@ def save_model_and_preprocessor(model, preprocessor, model_filename="model.pkl",
 
 # Step 5: FastAPI App
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Add your frontend URL here
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 # Load trained model and preprocessor
 if os.path.exists("model.pkl") and os.path.exists("preprocessor.pkl"):
