@@ -97,7 +97,8 @@ POST http://127.0.0.1:8000/predict_match/
 ## 🚀 Deployment
 This project is deployed on **Render** for easy API access.
 🔗 **Live API URL:** [https://soccer-predictor-ml-bekizod.onrender.com](https://soccer-predictor-ml-bekizod.onrender.com)
-🎯 Frontend UI
+
+## 🎯 Frontend UI
 Built using Next.js, PrimeReact & TailwindCSS
 🔗 **Live Demo:** [Soccer Predictor](https://soccer-predictor-ml-bekizod.netlify.app/)
 
