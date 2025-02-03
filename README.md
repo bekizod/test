@@ -38,7 +38,7 @@ The project includes:
 ## 🔧 Installation
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/Football-Match-Predictor.git
+git clone https://github.com/bekizod/test.git
 cd Football-Match-Predictor
 ```
 
@@ -97,6 +97,10 @@ POST http://127.0.0.1:8000/predict_match/
 ## 🚀 Deployment
 This project is deployed on **Render** for easy API access.
 🔗 **Live API URL:** [https://soccer-predictor-ml-bekizod.onrender.com](https://soccer-predictor-ml-bekizod.onrender.com)
+🎯 Frontend UI
+Built using Next.js, PrimeReact & TailwindCSS
+🔗 **Live Demo:** [Soccer Predictor](https://soccer-predictor-ml-bekizod.netlify.app/)
+
 
 ## 🛠 Future Improvements
 ✅ Add more advanced ML models like XGBoost or Neural Networks  
