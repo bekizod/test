@@ -76,14 +76,20 @@ POST http://127.0.0.1:8000/predict/
 POST http://127.0.0.1:8000/predict_match/
 {
   "home_team": {
-    "home_team_possession": 60,
-    "home_team_shots_on_target": 5,
-    "home_team_goal_count": 2
+    "home_team_possession": 55,
+    "home_team_shots_on_target": 6,
+    "home_team_yellow_cards": 2,
+    "home_team_red_cards": 0,
+    "home_team_goal_count": 1,
+    "home_team_fouls": 10
   },
   "away_team": {
-    "home_team_possession": 40,
-    "home_team_shots_on_target": 3,
-    "home_team_goal_count": 1
+    "home_team_possession": 45,
+    "home_team_shots_on_target": 4,
+    "away_team_yellow_cards": 3,
+    "away_team_red_cards": 1,
+    "away_team_goal_count": 2,
+    "away_team_fouls": 12
   }
 }
 ```
@@ -96,7 +102,7 @@ POST http://127.0.0.1:8000/predict_match/
 
 ## 🚀 Deployment
 This project is deployed on **Render** for easy API access.
-🔗 **Live API URL:** [https://soccer-predictor-ml-bekizod.onrender.com](https://soccer-predictor-ml-bekizod.onrender.com)
+🔗 **Live API URL:** [https://soccer-predictor-ml-bekizod.onrender.com](https://test-sjrn.onrender.com)
 
 ## 🎯 Frontend UI
 Built using Next.js, PrimeReact & TailwindCSS
