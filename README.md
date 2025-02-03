@@ -39,7 +39,7 @@ The project includes:
 ### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/bekizod/test.git
-cd Football-Match-Predictor
+cd test
 ```
 
 ### 2️⃣ Create a Virtual Environment & Install Dependencies
