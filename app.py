@@ -10,15 +10,125 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import os
 from fastapi.middleware.cors import CORSMiddleware
+from sklearn.metrics import (
+    classification_report, confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, roc_curve, auc
+)
 
+def evaluate_model(model, X_test, y_test):
+    """
+    Evaluates the model using various metrics and visualizations.
+    """
+    # Step 1: Make Predictions
+    y_pred = model.predict(X_test)
+    y_proba = model.predict_proba(X_test)[:, 1] if hasattr(model, "predict_proba") else None
+
+    # Step 2: Calculate Metrics
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, average='weighted')
+    recall = recall_score(y_test, y_pred, average='weighted')
+    f1 = f1_score(y_test, y_pred, average='weighted')
+    
+    # Step 3: Print Classification Report
+    print("\n🔹 Classification Report:")
+    print(classification_report(y_test, y_pred))
+
+    # Step 4: Confusion Matrix Visualization
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=["Away Win", "Draw", "Home Win"], 
+                yticklabels=["Away Win", "Draw", "Home Win"])
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True Label")
+    plt.title("Confusion Matrix")
+    plt.show()
+
+    # Step 5: ROC Curve (if probabilities are available)
+    if y_proba is not None:
+        fpr, tpr, _ = roc_curve(y_test, y_proba, pos_label=1)
+        roc_auc = auc(fpr, tpr)
+        plt.figure(figsize=(6, 5))
+        plt.plot(fpr, tpr, color="blue", lw=2, label=f"ROC Curve (AUC = {roc_auc:.2f})")
+        plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
+        plt.xlabel("False Positive Rate")
+        plt.ylabel("True Positive Rate")
+        plt.title("ROC Curve")
+        plt.legend()
+        plt.show()
+
+    # Step 6: Print Evaluation Metrics
+    print(f"\n✅ Model Performance Metrics:")
+    print(f"Accuracy: {accuracy:.4f}")
+    print(f"Precision: {precision:.4f}")
+    print(f"Recall: {recall:.4f}")
+    print(f"F1 Score: {f1:.4f}")
+
+def compare_with_baseline(X_train, y_train, X_test, y_test):
+    """
+    Compares model performance with a baseline Dummy Classifier.
+    """
+    # Step 1: Train a Baseline Model (Majority Class Strategy)
+    dummy_clf = DummyClassifier(strategy="most_frequent")
+    dummy_clf.fit(X_train, y_train)
+    y_pred_dummy = dummy_clf.predict(X_test)
+
+    # Step 2: Calculate Metrics for Baseline
+    accuracy_dummy = accuracy_score(y_test, y_pred_dummy)
+    f1_dummy = f1_score(y_test, y_pred_dummy, average='weighted')
+
+    print("\n🔹 Baseline Model (Dummy Classifier) Performance:")
+    print(f"Accuracy: {accuracy_dummy:.4f}")
+    print(f"F1 Score: {f1_dummy:.4f}")
+
+    # Step 3: Compare Performance
+    print("\n📊 Comparison:")
+    print(f"Random Forest Model Accuracy: {accuracy_score(y_test, model.predict(X_test)):.4f}")
+    print(f"Dummy Classifier Accuracy: {accuracy_dummy:.4f}")
+    print(f"Random Forest Model F1 Score: {f1_score(y_test, model.predict(X_test), average='weighted'):.4f}")
+    print(f"Dummy Classifier F1 Score: {f1_dummy:.4f}")
+
+    # Step 4: Visualization of Performance
+    plt.bar(["Random Forest", "Dummy Classifier"], [accuracy_score(y_test, model.predict(X_test)), accuracy_dummy], color=["blue", "red"])
+    plt.ylabel("Accuracy Score")
+    plt.title("Model vs. Baseline Accuracy Comparison")
+    plt.show()
 # Global preprocessor and model definition
 preprocessor = None
 model = None
 
+def perform_eda(df):
+    print("First 5 Rows of Data:")
+    print(df.head())
+
+    print("\nSummary Statistics:")
+    print(df.describe())
+
+    print("\nMissing Values Count:")
+    print(df.isnull().sum())
+
+    print("\nCorrelation Heatmap:")
+    plt.figure(figsize=(12, 6))
+    sns.heatmap(df.corr(), annot=True, cmap="coolwarm", fmt=".2f")
+    plt.show()
+
+    # Box plots to identify outliers
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    df[numeric_cols].plot(kind='box', figsize=(15, 6), vert=False)
+    plt.title("Box Plot of Numeric Features to Detect Outliers")
+    plt.show()
+
+    # Distribution of target variable
+    sns.countplot(x=df['match_result'])
+    plt.title("Distribution of Match Results")
+    plt.show()
+
+
+
+
 # Step 1: Data Preprocessing
 def preprocess_data(df):
     global preprocessor
-    # Drop unnecessary columns
+   
+   
     # Drop unnecessary columns
     df = df.drop(columns=[col for col in [
         'timestamp', 'date_GMT', 'home_team_shots', 'over_35_percentage_pre_match', 
@@ -57,10 +167,11 @@ def preprocess_data(df):
     df['match_result'] = df.apply(lambda row: 1 if row['home_team_goal_count'] > row['away_team_goal_count']
                                   else (-1 if row['home_team_goal_count'] < row['away_team_goal_count'] else 0), axis=1)
 
+
     # Select numerical and categorical features
     numerical_features = df.select_dtypes(include=['number']).columns.tolist()
     numerical_features.remove('match_result')  # Exclude target variable
-
+  
     categorical_features = df.select_dtypes(include=['object']).columns.tolist()
 
     # Initialize the preprocessor here
@@ -100,6 +211,7 @@ def evaluate_model(model, X_test, y_test):
     print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
     print("Model Accuracy:", accuracy_score(y_test, y_pred))
 
+
 # Step 4: Save Model and Preprocessor
 def save_model_and_preprocessor(model, preprocessor, model_filename="model.pkl", preprocessor_filename="preprocessor.pkl"):
     with open(model_filename, "wb") as f:
@@ -118,7 +230,7 @@ app.add_middleware(
     allow_origins=["http://localhost:3000","https://soccer-predictor-ml-bekizod.netlify.app"],  # Add your frontend URL here
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_headers=["*"],  # Allow all headers 
 )
 
 # Load trained model and preprocessor
@@ -224,9 +336,19 @@ async def predict_match(data: dict):
 
 # Main function to run training and FastAPI
 def main():
-    df = pd.read_csv("football.csv")  # Ensure your dataset exists
+
+    
+    # Load dataset
+    df = pd.read_csv("football.csv") # Ensure your dataset exists
+
+    # Display summary statistics
+    df.describe()  
+
+    # Check for missing values
+    df.isnull().sum()
 
     df, num_features, cat_features = preprocess_data(df)
+    
     X = df.drop(columns=['match_result'])
     y = df['match_result']
 
