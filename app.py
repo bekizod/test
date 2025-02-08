@@ -55,6 +55,16 @@ def evaluate_model(model, X_test, y_test):
         plt.legend()
         plt.show()
 
+        # Convert target variable to one-hot encoding for multiclass AUC
+        y_test_binary = np.zeros((y_test.size, y_test.max() + 2))
+        y_test_binary[np.arange(y_test.size), y_test + 1] = 1  # Shift values for one-hot encoding
+
+        y_pred_probs = best_model.predict_proba(X_test)  # Get class probabilities
+
+        # Compute AUC Score
+        auc_score = roc_auc_score(y_test_binary, y_pred_probs, multi_class="ovr")
+        print(f"AUC Score: {auc_score:.4f}")
+
     # Step 6: Print Evaluation Metrics
     print(f"\n✅ Model Performance Metrics:")
     print(f"Accuracy: {accuracy:.4f}")
@@ -114,6 +124,28 @@ def perform_eda(df):
     numeric_cols = df.select_dtypes(include=['number']).columns
     df[numeric_cols].plot(kind='box', figsize=(15, 6), vert=False)
     plt.title("Box Plot of Numeric Features to Detect Outliers")
+    plt.show()
+
+    # Plot boxplots
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(data=df[['home_team_possession', 'away_team_possession', 'home_team_shots_on_target', 'away_team_shots_on_target']])
+    plt.xticks(rotation=45)
+    plt.title("Boxplot of Key Features")
+    plt.show()
+
+
+    plt.figure(figsize=(8, 5))
+    sns.scatterplot(x=df["home_team_shots_on_target"], y=df["home_team_goal_count"], hue=df["match_result"], palette="coolwarm")
+    plt.title("Shots on Target vs. Goals (Home Team)")
+    plt.xlabel("Shots on Target")
+    plt.ylabel("Goals Scored")
+    plt.show() 
+
+    # Plot match result distribution
+    plt.figure(figsize=(6, 4))
+    sns.countplot(x=df["match_result"], palette="Set2")
+    plt.xticks(ticks=[0, 1, 2], labels=["Draw", "Home Win", "Away Win"])
+    plt.title("Distribution of Match Outcomes")
     plt.show()
 
     # Distribution of target variable
