@@ -3,7 +3,7 @@
 ## 📌 Overview
 This project is a **Machine Learning-based Football Match Outcome Predictor** built using **FastAPI**, **Scikit-Learn**, and **Random Forest Classifier**. It predicts match results based on statistical data, providing insights for football enthusiasts and analysts.
 
-<img src="https://i.ibb.co/6cBcvBg3/Screenshot-8.png" alt="Ui Implementation">
+<img src="https://i.ibb.co/6cBcvBg3/Screenshot-8.png" alt="Ui Implementations">
 
 
 The project includes:
